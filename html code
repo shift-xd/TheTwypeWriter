@@ -1,1 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Typewriter Typing Speed Test</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Roboto:wght@300;400;500&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
+        :root {
+            --primary: #e6b325;
+            --primary-dark: #c4951c;
+            --secondary: #8c5e0c;
+            --background: #1a1a1a;
+            --paper: #f0f0dc;
+            --text-light: #d9d9d9;
+            --text-dark: #333;
+            --correct: #2e8b57;
+            --incorrect: #cd5c5c;
+            --panel: #0d0d0d;
+            --border: #444;
+        }
+
+        body {
+            font-family: 'Special Elite', 'Courier New', monospace;
+            background: var(--background);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(140, 94, 12, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(230, 179, 37, 0.1) 0%, transparent 20%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(230, 179, 37, 0.5);
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1:after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #a9a9a9;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--secondary);
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+            min-width: 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .typewriter-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .typewriter {
+            background: var(--panel);
+            border: 3px solid var(--secondary);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .typewriter:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary), var(--secondary));
+        }
+
+        .paper {
+            background: var(--paper);
+            color: var(--text-dark);
+            padding: 25px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            min-height: 180px;
+            font-size: 1.5rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .paper:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 40px;
+            right: 0;
+            height: 100%;
+            background: repeating-linear-gradient(var(--paper), var(--paper) 28px, #ddd 29px, #ddd 30px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .text-display {
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-area {
+            width: 100%;
+            padding: 15px;
+            font-family: 'Special Elite', 'Courier New', monospace;
+            font-size: 1.3rem;
+            background: var(--panel);
+            color: var(--text-light);
+            border: 2px solid var(--secondary);
+            border-radius: 4px;
+            resize: none;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-area:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(230, 179, 37, 0.4);
+        }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .timer-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: var(--secondary);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-family: 'Special Elite', 'Courier New', monospace;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            outline: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-panel {
+            background: var(--panel);
+            border: 1px solid var(--secondary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .settings-title {
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.4rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        select, input {
+            padding: 10px;
+            background: #222;
+            color: var(--text-light);
+            border: 1px solid var(--secondary);
+            border-radius: 4px;
+            font-family: 'Special Elite', 'Courier New', monospace;
+            outline: none;
+        }
+
+        .result-screen {
+            background: rgba(13, 13, 13, 0.95);
+            border: 3px solid var(--primary);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            display: none;
+            margin-top: 30px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        .result-screen h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .final-stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .final-stat {
+            background: #1a1a1a;
+            border: 1px solid var(--secondary);
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 150px;
+            flex: 1;
+        }
+
+        .final-stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .restart-btn {
+            background: var(--primary);
+            color: var(--background);
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            margin-top: 20px;
+        }
+
+        .char {
+            transition: all 0.1s;
+            position: relative;
+        }
+
+        .correct {
+            color: var(--correct);
+        }
+
+        .incorrect {
+            color: var(--incorrect);
+            text-decoration: underline;
+        }
+
+        .current {
+            background: rgba(230, 179, 37, 0.2);
+            position: relative;
+        }
+
+        .current:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            width: 100%;
+        }
+
+        .keyboard-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .key {
+            background: #333;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .history-panel {
+            background: var(--panel);
+            border: 1px solid var(--secondary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            display: none;
+        }
+
+        .history-title {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .history-stat {
+            min-width: 80px;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .paper {
+                font-size: 1.3rem;
+            }
+            
+            .input-area {
+                font-size: 1.1rem;
+            }
+            
+            .final-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .final-stat {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .typewriter {
+                padding: 20px;
+            }
+            
+            .paper {
+                padding: 15px;
+                min-height: 150px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>The Twype Writer</h1>
+            <p class="tagline">Write and Type Until The Dawn Dies and chimes fade </p>
+        </header>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-label">Words Per Minute</div>
+                <div class="stat-value" id="wpm">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Accuracy</div>
+                <div class="stat-value" id="accuracy">100%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Time Remaining</div>
+                <div class="stat-value" id="timer">60s</div>
+            </div>
+        </div>
+        
+        <div class="typewriter-container">
+            <div class="typewriter">
+                <div class="paper">
+                    <div class="text-display" id="text-display"></div>
+                </div>
+                <textarea 
+                    class="input-area" 
+                    id="input-area" 
+                    placeholder="Start typing the text above to begin the test..." 
+                    rows="4"
+                    spellcheck="false"
+                ></textarea>
+                
+                <div class="timer-container">
+                    <div class="timer-display" id="timer-display">60s</div>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="new-text">
+                <i class="fas fa-sync-alt"></i> New Text
+            </button>
+            <button id="reset">
+                <i class="fas fa-redo"></i> Reset Test
+            </button>
+            <button id="toggle-history">
+                <i class="fas fa-history"></i> History
+            </button>
+        </div>
+        
+        <div class="keyboard-hint">
+            <span><span class="key">Tab</span> + <span class="key">Enter</span> to restart test</span>
+        </div>
+        
+        <div class="settings-panel">
+            <h3 class="settings-title">Test Settings</h3>
+            <div class="settings-grid">
+                <div class="setting-group">
+                    <label for="duration">Test Duration</label>
+                    <select id="duration">
+                        <option value="15">15 Seconds</option>
+                        <option value="30">30 Seconds</option>
+                        <option value="60" selected>60 Seconds</option>
+                        <option value="120">120 Seconds</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="difficulty">Difficulty Level</label>
+                    <select id="difficulty">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="expert">Expert</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="history-panel" id="history-panel">
+            <div class="history-title">
+                <h3>Test History</h3>
+                <button id="clear-history"><i class="fas fa-trash"></i> Clear</button>
+            </div>
+            <div class="history-list" id="history-list">
+                <div class="empty-history">No test history yet. Complete a test to see your results here.</div>
+            </div>
+        </div>
+        
+        <div class="result-screen" id="result-screen">
+            <h2>Test Complete!</h2>
+            <div class="final-stats">
+                <div class="final-stat">
+                    <div>Words per Minute</div>
+                    <div class="final-stat-value" id="final-wpm">0</div>
+                </div>
+                <div class="final-stat">
+                    <div>Accuracy</div>
+                    <div class="final-stat-value" id="final-accuracy">100%</div>
+                </div>
+                <div class="final-stat">
+                    <div>Characters</div>
+                    <div class="final-stat-value" id="final-chars">0</div>
+                </div>
+            </div>
+            <button class="restart-btn" id="restart-btn">
+                <i class="fas fa-keyboard"></i> Try Again
+            </button>
+        </div>
+        
+        <footer>
+            <p>The Twype Writer Typing Test by _shift_xd_ &copy; 2023 | Enhance your typing skills with vintage charm</p>
+        </footer>
+    </div>
+
+    <script>
+        // Enhanced sentences database with over 1000 entries
+        const sentences = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Sphinx of black quartz, judge my vow.",
+            "How vexingly quick daft zebras jump!",
+            "Pack my box with five dozen liquor jugs.",
+            "The five boxing wizards jump quickly.",
+            "Bright vixens jump; dozy fowl quack.",
+            "Jackdaws love my big sphinx of quartz.",
+            "The jay, pig, fox, zebra and my wolves quack!",
+            "Sympathizing would fix Quaker objectives.",
+            "A wizard's job is to vex chumps quickly in fog.",
+            "Watch Jeopardy!, Alex Trebek's fun TV quiz game.",
+            "By Jove, my quick study of lexicography won a prize!",
+            "Woven silk pyjamas exchanged for blue quartz.",
+            "Brave gods risked a quick jump over the lazy fiend.",
+            "The explorer was frozen in his big kayak just after making a discovery.",
+            "We promptly judged antique ivory buckles for the next prize.",
+            "A quick movement of the enemy will jeopardize six gunboats.",
+            "All questions asked by five watched experts amaze the judge.",
+            "Whenever the black fox jumped the squirrel gazed suspiciously.",
+            "We have just quoted on nine dozen boxes of gray lamp wicks.",
+            "The public was amazed to view the quickness and dexterity of the juggler.",
+            "While making deep excavations we found some quaint bronze jewelry.",
+            "The job requires extra pluck and zeal from every young wage earner.",
+            "A quart jar of oil mixed with zinc oxide makes a very bright paint.",
+            "The exodus of jazzy pigeons is craved by quitters.",
+            "Mix Zapf with Veljovic and get quirky Beziers.",
+            "Whenever you copy text for a test, watch out for copyright restrictions.",
+            "Fred specialized in the job of making very quaint wax toys.",
+            "The July sun caused a fragment of black pine wax to ooze.",
+            "The vending machine dropped a packet of lemon flavored cookies.",
+            "The typist quickly arranged the documents before the meeting.",
+            "Fascinated by the exceptional clarity of the water in the lake.",
+            "Exploring the wilderness requires preparation and a good map.",
+            "Journalists reported the events with impartiality and precision.",
+            "Modern technology enables us to connect with people worldwide.",
+            "Philosophy encourages critical thinking about existence.",
+            "Revolutionary ideas often challenge established conventions.",
+            "Scientists discovered a new species in the tropical rainforest.",
+            "The orchestra performed the symphony with great enthusiasm.",
+            "Urban development must consider environmental sustainability.",
+            "Vibrant colors and intricate patterns characterized the artwork.",
+            "Wildlife conservation efforts are crucial for biodiversity.",
+            "Xylophones produce unique tones when struck with mallets.",
+            "Young entrepreneurs are innovating in the tech industry.",
+            "Zoologists study animal behavior in natural habitats.",
+            "Quantum mechanics revolutionized our understanding of physics.",
+            "Astronomers observed a rare celestial event last night.",
+            "Beneath the surface, the ocean holds countless mysteries.",
+            "Cultural diversity enriches societies in profound ways.",
+            "Democracy depends on the active participation of citizens.",
+            "Economic policies influence global markets significantly.",
+            "Freshly brewed coffee provides a welcome morning ritual.",
+            "Globalization has interconnected economies and cultures.",
+            "Historical artifacts provide insights into ancient civilizations.",
+            "Innovative solutions are needed to address climate change.",
+            "Jovial laughter echoed through the festive gathering.",
+            "Knowledge acquisition is a lifelong pursuit of wisdom.",
+            "Linguistic diversity reflects humanity's cultural richness.",
+            "Majestic mountains inspire awe and a sense of adventure.",
+            "Nutritional science explores the relationship between diet and health.",
+            "Optimism fosters resilience in challenging circumstances.",
+            "Psychological research reveals fascinating aspects of human behavior.",
+            "Quiet contemplation allows for introspection and clarity.",
+            "Revolutionary technologies transform how we live and work.",
+            "Sustainable practices preserve resources for future generations.",
+            "Transcendental meditation promotes mental clarity and peace.",
+            "Unprecedented events reshape our understanding of the world.",
+            "Vibrant ecosystems support diverse forms of life.",
+            "Widespread innovation drives economic growth and development.",
+            "Xenial hospitality creates welcoming environments for guests.",
+            "Youthful enthusiasm brings fresh perspectives to challenges.",
+            "Zealous dedication achieves remarkable accomplishments.",
+            "Abstract concepts challenge our fundamental perceptions.",
+            "Boundless curiosity fuels scientific discovery and innovation.",
+            "Comprehensive analysis reveals hidden patterns and connections.",
+            "Dynamic systems adapt to changing circumstances effectively.",
+            "Ecological balance maintains the health of our planet.",
+            "Fundamental principles guide ethical decision-making.",
+            "Global cooperation addresses transnational challenges effectively.",
+            "Harmonious relationships foster personal and collective well-being.",
+            "Inquisitive minds explore the boundaries of knowledge.",
+            "Juxtaposing ideas reveals unexpected connections.",
+            "Kinetic energy transforms potential into motion and action.",
+            "Luminous phenomena illuminate the mysteries of the universe.",
+            "Metaphorical language enriches communication and expression.",
+            "Nuanced understanding appreciates subtle differences and shades.",
+            "Objective analysis relies on evidence and critical thinking.",
+            "Proactive approaches anticipate and prevent potential problems.",
+            "Quantitative methods measure phenomena with precision.",
+            "Resilient communities withstand and recover from adversity.",
+            "Symbiotic relationships benefit all participating organisms.",
+            "Transformative experiences reshape our perspectives and values.",
+            "Ubiquitous technology integrates into every aspect of life.",
+            "Visionary leadership inspires progress and positive change.",
+            "Wholesome nutrition supports physical and mental health.",
+            "Xeric landscapes challenge adaptation and survival strategies.",
+            "Yearning for knowledge drives educational pursuits.",
+            "Zeitgeist captures the spirit of a particular era.",
+            "Algorithmic thinking structures problem-solving approaches.",
+            "Biodiversity conservation protects essential ecosystems.",
+            "Cognitive development evolves through learning experiences.",
+            "Digital transformation revolutionizes business and communication.",
+            "Empirical evidence validates theoretical frameworks.",
+            "Futuristic concepts imagine possibilities beyond current reality.",
+            "Geopolitical dynamics influence international relations.",
+            "Holistic approaches consider interconnected systems and factors.",
+            "Interdisciplinary research bridges traditional academic boundaries.",
+            "Journalistic integrity upholds truth and accountability.",
+            "Kinesthetic learning engages physical movement and experience.",
+            "Linguistic analysis examines language structure and usage.",
+            "Multifaceted problems require comprehensive solutions.",
+            "Neuroscientific research explores brain functions and processes.",
+            "Operational efficiency optimizes resource utilization.",
+            "Philosophical inquiry examines fundamental questions of existence.",
+            "Qualitative research explores subjective experiences and meanings.",
+            "Resource management ensures sustainable utilization of assets.",
+            "Strategic planning aligns actions with long-term objectives.",
+            "Technological innovation drives economic and social progress.",
+            "Urban planning creates functional and livable cities.",
+            "Virtual environments simulate real-world experiences digitally.",
+            "Watershed management protects vital water resources.",
+            "Xenotransplantation explores cross-species organ transplantation.",
+            "Yield optimization increases agricultural productivity sustainably.",
+            "Zero-waste initiatives minimize environmental impact.",
+            "Adaptive systems respond effectively to changing conditions.",
+            "Behavioral economics examines psychological factors in decision-making.",
+            "Climate resilience prepares communities for environmental changes.",
+            "Data visualization communicates complex information effectively.",
+            "Educational technology enhances learning experiences.",
+            "Financial literacy empowers informed economic decisions.",
+            "Generative design creates innovative solutions algorithmically.",
+            "Human-centered design prioritizes user needs and experiences.",
+            "Industrial ecology minimizes waste through symbiotic processes.",
+            "Jurisdictional boundaries define legal and administrative authority.",
+            "Knowledge management organizes and shares institutional information.",
+            "Logistical coordination ensures efficient resource distribution.",
+            "Microeconomic analysis examines individual market behaviors.",
+            "Nanotechnology manipulates matter at the molecular level.",
+            "Organizational culture shapes workplace values and behaviors.",
+            "Participatory governance engages citizens in decision-making.",
+            "Quantitative easing stimulates economic activity monetarily.",
+            "Renewable energy transitions toward sustainable power sources.",
+            "Supply chain management coordinates production and distribution.",
+            "Telemedicine provides healthcare services remotely.",
+            "Universal design creates accessible environments for all.",
+            "Value investing identifies undervalued market opportunities.",
+            "Water conservation preserves essential natural resources.",
+            "X-ray crystallography reveals molecular structures.",
+            "Yield management optimizes pricing and capacity utilization.",
+            "Zoonotic diseases transmit between animals and humans."
+        ];
+
+        // Generate more sentences to reach over 1000
+        function generateSentences(count) {
+            const prefixes = [
+                "In the quiet library,",
+                "Under the starry sky,",
+                "During the intense meeting,",
+                "After careful consideration,",
+                "With great enthusiasm,",
+                "Despite numerous challenges,",
+                "Through collaborative efforts,",
+                "Before the deadline approaches,",
+                "Following extensive research,",
+                "Amidst the bustling city,"
+            ];
+            
+            const subjects = [
+                "the dedicated team",
+                "innovative researchers",
+                "creative artists",
+                "experienced professionals",
+                "curious students",
+                "passionate volunteers",
+                "skilled engineers",
+                "thoughtful philosophers",
+                "adventurous explorers",
+                "committed activists"
+            ];
+            
+            const verbs = [
+                "developed",
+                "discovered",
+                "created",
+                "implemented",
+                "explored",
+                "analyzed",
+                "transformed",
+                "challenged",
+                "enhanced",
+                "reimagined"
+            ];
+            
+            const objects = [
+                "a groundbreaking solution",
+                "an innovative approach",
+                "a sustainable model",
+                "a transformative concept",
+                "a comprehensive framework",
+                "a novel technique",
+                "an effective strategy",
+                "a revolutionary system",
+                "a creative expression",
+                "a meaningful contribution"
+            ];
+            
+            const contexts = [
+                "to address complex problems.",
+                "that reshaped perspectives.",
+                "inspired by nature's designs.",
+                "through interdisciplinary collaboration.",
+                "despite limited resources.",
+                "leveraging emerging technologies.",
+                "focused on human-centered outcomes.",
+                "drawing from diverse cultural influences.",
+                "with long-term sustainability in mind.",
+                "to create positive social impact."
+            ];
+            
+            const newSentences = [];
+            
+            for (let i = 0; i < count; i++) {
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                const subject = subjects[Math.floor(Math.random() * subjects.length)];
+                const verb = verbs[Math.floor(Math.random() * verbs.length)];
+                const object = objects[Math.floor(Math.random() * objects.length)];
+                const context = contexts[Math.floor(Math.random() * contexts.length)];
+                
+                newSentences.push(`${prefix} ${subject} ${verb} ${object} ${context}`);
+            }
+            
+            return newSentences;
+        }
+
+        // Add generated sentences to the array
+        sentences.push(...generateSentences(950));
+
+        // DOM elements
+        const textDisplay = document.getElementById('text-display');
+        const inputArea = document.getElementById('input-area');
+        const wpmDisplay = document.getElementById('wpm');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const timerDisplay = document.getElementById('timer');
+        const timerText = document.getElementById('timer-display');
+        const progressBar = document.getElementById('progress');
+        const resultScreen = document.getElementById('result-screen');
+        const finalWpm = document.getElementById('final-wpm');
+        const finalAccuracy = document.getElementById('final-accuracy');
+        const finalChars = document.getElementById('final-chars');
+        const newTextBtn = document.getElementById('new-text');
+        const resetBtn = document.getElementById('reset');
+        const restartBtn = document.getElementById('restart-btn');
+        const durationSelect = document.getElementById('duration');
+        const difficultySelect = document.getElementById('difficulty');
+        const historyPanel = document.getElementById('history-panel');
+        const historyList = document.getElementById('history-list');
+        const clearHistoryBtn = document.getElementById('clear-history');
+        const toggleHistoryBtn = document.getElementById('toggle-history');
+
+        // State variables
+        let currentSentence = '';
+        let startTime = null;
+        let timer = null;
+        let totalChars = 0;
+        let correctChars = 0;
+        let testActive = false;
+        let timeLeft = 60;
+        let testDuration = 60;
+        let testHistory = JSON.parse(localStorage.getItem('typingTestHistory')) || [];
+
+        // Initialize the test
+        function initTest() {
+            // Get selected duration
+            testDuration = parseInt(durationSelect.value);
+            timeLeft = testDuration;
+            
+            // Get difficulty
+            const difficulty = difficultySelect.value;
+            
+            // Select a random sentence based on difficulty
+            let filteredSentences = sentences;
+            
+            if (difficulty === 'easy') {
+                filteredSentences = sentences.filter(s => s.length < 80 && s.split(' ').length < 15);
+            } else if (difficulty === 'medium') {
+                filteredSentences = sentences.filter(s => s.length >= 80 && s.length < 150 && s.split(' ').length >= 15 && s.split(' ').length < 25);
+            } else if (difficulty === 'hard') {
+                filteredSentences = sentences.filter(s => s.length >= 150 && s.split(' ').length >= 25);
+            } else if (difficulty === 'expert') {
+                // Expert: longer sentences with complex words
+                filteredSentences = sentences.filter(s => s.length > 180 || s.split(' ').length > 30);
+            }
+            
+            // Ensure we have sentences for the selected difficulty
+            if (filteredSentences.length === 0) {
+                filteredSentences = sentences;
+            }
+            
+            currentSentence = filteredSentences[Math.floor(Math.random() * filteredSentences.length)];
+            
+            // Display the sentence with character spans
+            textDisplay.innerHTML = '';
+            for (let i = 0; i < currentSentence.length; i++) {
+                const charSpan = document.createElement('span');
+                charSpan.classList.add('char');
+                charSpan.textContent = currentSentence[i];
+                textDisplay.appendChild(charSpan);
+            }
+            
+            // Highlight the first character
+            if (textDisplay.firstChild) {
+                textDisplay.firstChild.classList.add('current');
+            }
+            
+            // Reset stats
+            inputArea.value = '';
+            wpmDisplay.textContent = '0';
+            accuracyDisplay.textContent = '100%';
+            timerText.textContent = `${timeLeft}s`;
+            progressBar.style.width = '100%';
+            totalChars = 0;
+            correctChars = 0;
+            testActive = false;
+            
+            // Hide result screen
+            resultScreen.style.display = 'none';
+            
+            // Focus on input area
+            inputArea.focus();
+            
+            // Update timer display
+            timerText.textContent = `${timeLeft}s`;
+        }
+
+        // Start the test
+        function startTest() {
+            if (testActive) return;
+            
+            testActive = true;
+            startTime = new Date();
+            
+            // Start the timer
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = `${timeLeft}s`;
+                
+                // Update progress bar
+                const progressPercentage = (timeLeft / testDuration) * 100;
+                progressBar.style.width = `${progressPercentage}%`;
+                
+                // Change color when time is running low
+                if (timeLeft <= 10) {
+                    progressBar.style.background = 'linear-gradient(90deg, #ff4d4d, #cc0000)';
+                } else if (timeLeft <= 20) {
+                    progressBar.style.background = 'linear-gradient(90deg, #ffa64d, #ff6600)';
+                }
+                
+                if (timeLeft <= 0) {
+                    endTest();
+                }
+            }, 1000);
+        }
+
+        // End the test
+        function endTest() {
+            testActive = false;
+            clearInterval(timer);
+            
+            // Calculate final stats
+            const timeTaken = (testDuration - timeLeft) || 1; // Avoid division by zero
+            const wpm = Math.round((correctChars / 5) / (timeTaken / 60));
+            const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+            
+            // Display final stats
+            finalWpm.textContent = wpm;
+            finalAccuracy.textContent = `${accuracy}%`;
+            finalChars.textContent = totalChars;
+            
+            // Show result screen
+            resultScreen.style.display = 'block';
+            
+            // Save to history
+            saveToHistory(wpm, accuracy, totalChars);
+            
+            // Update history display
+            renderHistory();
+        }
+
+        // Save test result to history
+        function saveToHistory(wpm, accuracy, chars) {
+            const testResult = {
+                date: new Date().toLocaleString(),
+                wpm: wpm,
+                accuracy: accuracy,
+                chars: chars,
+                duration: testDuration
+            };
+            
+            testHistory.unshift(testResult);
+            
+            // Keep only the last 10 results
+            if (testHistory.length > 10) {
+                testHistory.pop();
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('typingTestHistory', JSON.stringify(testHistory));
+        }
+
+        // Render test history
+        function renderHistory() {
+            if (testHistory.length === 0) {
+                historyList.innerHTML = '<div class="empty-history">No test history yet. Complete a test to see your results here.</div>';
+                return;
+            }
+            
+            historyList.innerHTML = '';
+            
+            testHistory.forEach(result => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                historyItem.innerHTML = `
+                    <div class="history-date">${result.date}</div>
+                    <div class="history-stats">
+                        <div class="history-stat">
+                            <div>WPM</div>
+                            <div class="stat-value">${result.wpm}</div>
+                        </div>
+                        <div class="history-stat">
+                            <div>Accuracy</div>
+                            <div class="stat-value">${result.accuracy}%</div>
+                        </div>
+                        <div class="history-stat">
+                            <div>Duration</div>
+                            <div class="stat-value">${result.duration}s</div>
+                        </div>
+                    </div>
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        // Clear test history
+        function clearHistory() {
+            testHistory = [];
+            localStorage.removeItem('typingTestHistory');
+            renderHistory();
+        }
+
+        // Handle user input
+        function handleInput() {
+            const typedText = inputArea.value;
+            const targetText = currentSentence;
+            totalChars = typedText.length;
+            
+            // Start the test if it hasn't started
+            if (!testActive && totalChars > 0) {
+                startTest();
+            }
+            
+            // Update character highlighting
+            for (let i = 0; i < targetText.length; i++) {
+                const charSpan = textDisplay.children[i];
+                
+                if (i < totalChars) {
+                    if (typedText[i] === targetText[i]) {
+                        charSpan.classList.remove('incorrect');
+                        charSpan.classList.add('correct');
+                    } else {
+                        charSpan.classList.remove('correct');
+                        charSpan.classList.add('incorrect');
+                    }
+                } else {
+                    charSpan.classList.remove('correct', 'incorrect');
+                }
+                
+                // Remove current class from all
+                charSpan.classList.remove('current');
+            }
+            
+            // Add current class to next character
+            if (totalChars < targetText.length) {
+                textDisplay.children[totalChars].classList.add('current');
+            }
+            
+            // Calculate and update real-time stats
+            if (testActive) {
+                // Calculate elapsed time in minutes
+                const elapsedTime = (new Date() - startTime) / 60000;
+                
+                // Count correct characters
+                correctChars = 0;
+                for (let i = 0; i < totalChars; i++) {
+                    if (typedText[i] === targetText[i]) {
+                        correctChars++;
+                    }
+                }
+                
+                // Calculate WPM (words = characters / 5)
+                const wpm = Math.round((correctChars / 5) / elapsedTime);
+                wpmDisplay.textContent = wpm;
+                
+                // Calculate accuracy
+                const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+                accuracyDisplay.textContent = `${accuracy}%`;
+            }
+            
+            // End test if user completes the sentence
+            if (totalChars === targetText.length) {
+                endTest();
+            }
+        }
+
+        // Event listeners
+        inputArea.addEventListener('input', handleInput);
+        newTextBtn.addEventListener('click', initTest);
+        resetBtn.addEventListener('click', () => {
+            clearInterval(timer);
+            initTest();
+        });
+        restartBtn.addEventListener('click', () => {
+            resultScreen.style.display = 'none';
+            initTest();
+        });
+        durationSelect.addEventListener('change', initTest);
+        difficultySelect.addEventListener('change', initTest);
+        clearHistoryBtn.addEventListener('click', clearHistory);
+        toggleHistoryBtn.addEventListener('click', () => {
+            historyPanel.style.display = historyPanel.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Tab + Enter to restart
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                initTest();
+            }
+        });
+
+        // Initialize the test on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initTest();
+            renderHistory();
+        });
+    </script>
+</body>
+</html>
