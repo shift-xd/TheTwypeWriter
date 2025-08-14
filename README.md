@@ -1,4 +1,4 @@
-<img width="627" height="171" alt="image" src="https://github.com/user-attachments/assets/13fe2cb6-b6a6-491e-acc5-f260718437fa" /># The Twype Writer
+## The Twype Writer
 <img width="627" height="171" alt="image" src="https://github.com/user-attachments/assets/a7a432b9-5ca2-4d2a-9d89-0c8b9e6c6d07" />
 
 
